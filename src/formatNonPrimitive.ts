@@ -6,6 +6,7 @@ import getFunctionPrefix from './typeDetection/functionPrefix';
 import { ValueData, ValueDataNonPrim } from './valueData';
 import primordials from './primordials';
 import colors from './colors';
+import stripAnsi from 'strip-ansi';
 
 const { ObjectGetOwnPropertyDescriptor } = primordials;
 
@@ -75,7 +76,7 @@ function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspect
     ctx.totalIndentation = oldIndent;
     
     // TODO: Support total indenting
-    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + curEntry.length, 0) >= ctx.breakLength;
+    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => { console.log(stripAnsi(curEntry).length + ' ' + curEntry); return totalLen + stripAnsi(curEntry).length }, 0) >= ctx.breakLength;
     const lineBreakOrSpace = isPastBreakLength ? `\n${ctx.totalIndentation}` : ' ';
     //const lineBreakOrSpace = isPastBreakLength ? maybeLineBreak : ' ';
     const maybeRelativeIndent = isPastBreakLength ? ctx.indentation : '';
@@ -113,9 +114,9 @@ nonPrimitiveFormatMap.set('Array', (value: NonPrimitive, vd: ValueDataNonPrim, c
     let formattedEntries = value.map(entry => inspectValue(entry, ctx));
     ctx.parentValues.pop();
     --ctx.currentDepth;
-    ctx.totalIndentation = oldIndent
+    ctx.totalIndentation = oldIndent;
     
-    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + curEntry.length, 0) >= ctx.breakLength;
+    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + stripAnsi(curEntry).length, 0) >= ctx.breakLength;
     const lineBreakOrSpace = isPastBreakLength ? `\n${ctx.totalIndentation}` : ' ';
     //const lineBreakOrSpace = isPastBreakLength ? maybeLineBreak : ' ';
     const maybeRelativeIndent = isPastBreakLength ? ctx.indentation : '';
