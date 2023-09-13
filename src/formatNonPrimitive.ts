@@ -76,7 +76,7 @@ function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspect
     ctx.totalIndentation = oldIndent;
     
     // TODO: Support total indenting
-    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => { console.log(stripAnsi(curEntry).length + ' ' + curEntry); return totalLen + stripAnsi(curEntry).length }, 0) >= ctx.breakLength;
+    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + stripAnsi(curEntry).length, 0) >= ctx.breakLength;
     const lineBreakOrSpace = isPastBreakLength ? `\n${ctx.totalIndentation}` : ' ';
     //const lineBreakOrSpace = isPastBreakLength ? maybeLineBreak : ' ';
     const maybeRelativeIndent = isPastBreakLength ? ctx.indentation : '';
