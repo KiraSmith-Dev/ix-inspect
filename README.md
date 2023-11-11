@@ -1,6 +1,6 @@
 # ixInspect
 
-ixInspect is a library designed for seamless object inspection in constrained enviornments, such as browsers or V8 isolates, offering similar functionality to Node.js's `util.inspect` but without relying on Node.js internals.
+ixInspect is a library designed for seamless object inspection in constrained environments, such as browsers or V8 isolates, offering similar functionality to Node.js's `util.inspect` but without relying on Node.js internals.
 
 ## Installation
 
