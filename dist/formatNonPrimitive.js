@@ -36,8 +36,8 @@ function getEntries(value, vd) {
     });
 }
 // TODO: Possibly instead format all values for circular/ref, so that the topmost value (which isn't under a key, since it's topmost) will also have this applied
-function formatPair(ctx, entry, seperator = colors_1.default.colon(': '), inspectBoth = false) {
-    return `${colors_1.default.key(`${inspectBoth ? (0, inspectValue_1.default)(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${seperator}${entry.needsFormatting ? (0, inspectValue_1.default)(entry.value, ctx) : entry.value}`;
+function formatPair(ctx, entry, separator = colors_1.default.colon(': '), inspectBoth = false) {
+    return `${colors_1.default.key(`${inspectBoth ? (0, inspectValue_1.default)(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? (0, inspectValue_1.default)(entry.value, ctx) : entry.value}`;
 }
 // Mostly just a wrapper for changing the ctx properties
 function formatEntries(value, vd, ctx, formatOptions) {
@@ -53,7 +53,7 @@ function formatEntries(value, vd, ctx, formatOptions) {
     ++ctx.currentDepth;
     const oldIndent = ctx.totalIndentation;
     ctx.totalIndentation += ctx.indentation;
-    let formattedEntries = entries.map(entry => formatPair(ctx, entry, formatOptions === null || formatOptions === void 0 ? void 0 : formatOptions.seperator, vd.typeName === 'Map'));
+    let formattedEntries = entries.map(entry => formatPair(ctx, entry, formatOptions === null || formatOptions === void 0 ? void 0 : formatOptions.separator, vd.typeName === 'Map'));
     ctx.parentValues.pop();
     --ctx.currentDepth;
     ctx.totalIndentation = oldIndent;
@@ -99,7 +99,7 @@ exports.nonPrimitiveFormatMap.set('Array', (value, vd, ctx) => {
     return `${maybePrefix}[${lineBreakOrSpace}${formattedEntries.join(`,${lineBreakOrSpace}`)}${lineBreakOrSpace}]`;
 });
 exports.nonPrimitiveFormatMap.set('Map', (value, vd, ctx) => {
-    return `${vd.getPrefix(`(${primordials_1.default.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { seperator: colors_1.default.arrow(' => ') })}`;
+    return `${vd.getPrefix(`(${primordials_1.default.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: colors_1.default.arrow(' => ') })}`;
 });
 function nonPrimitiveFallbackFormatter(value, vd, ctx) {
     if (ctx.currentDepth >= ctx.maxDepth)

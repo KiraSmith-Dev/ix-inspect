@@ -50,12 +50,12 @@ function getEntries(value: NonPrimitive, vd: ValueDataNonPrim): InspectEntry[] {
 }
 
 // TODO: Possibly instead format all values for circular/ref, so that the topmost value (which isn't under a key, since it's topmost) will also have this applied
-function formatPair(ctx: IxInspectContext, entry: InspectEntry, seperator = colors.colon(': '), inspectBoth = false): string {
-    return `${colors.key(`${inspectBoth ? inspectValue(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${seperator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
+function formatPair(ctx: IxInspectContext, entry: InspectEntry, separator = colors.colon(': '), inspectBoth = false): string {
+    return `${colors.key(`${inspectBoth ? inspectValue(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
 }
 
 // Mostly just a wrapper for changing the ctx properties
-function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext, formatOptions?: { brackets?: [string, string], isAppendingToTag?: boolean, seperator?: string }) {
+function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext, formatOptions?: { brackets?: [string, string], isAppendingToTag?: boolean, separator?: string }) {
     formatOptions ??= {};
     formatOptions.brackets ??= ['{', '}'];
     formatOptions.isAppendingToTag ??= false;
@@ -70,7 +70,7 @@ function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspect
     ++ctx.currentDepth;
     const oldIndent = ctx.totalIndentation;
     ctx.totalIndentation += ctx.indentation;
-    let formattedEntries = entries.map(entry => formatPair(ctx, entry, formatOptions?.seperator, vd.typeName === 'Map'));
+    let formattedEntries = entries.map(entry => formatPair(ctx, entry, formatOptions?.separator, vd.typeName === 'Map'));
     ctx.parentValues.pop();
     --ctx.currentDepth;
     ctx.totalIndentation = oldIndent;
@@ -129,7 +129,7 @@ nonPrimitiveFormatMap.set('Array', (value: NonPrimitive, vd: ValueDataNonPrim, c
 });
 
 nonPrimitiveFormatMap.set('Map', (value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext) => {
-    return `${vd.getPrefix(`(${primordials.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { seperator: colors.arrow(' => ') })}`
+    return `${vd.getPrefix(`(${primordials.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: colors.arrow(' => ') })}`
 });
 
 export function nonPrimitiveFallbackFormatter(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext) {

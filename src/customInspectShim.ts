@@ -1,7 +1,7 @@
 import inspect from './ixInspect';
 import { IxInspectOptions } from './options';
 
-// Coppied from node types
+// Copied from node types
 interface InspectOptions {
     /**
      * If set to `true`, getters are going to be
