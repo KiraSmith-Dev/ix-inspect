@@ -1,1 +1,1 @@
-{"version":3,"file":"formatPrimitive.d.ts","sourceRoot":"","sources":["../src/formatPrimitive.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAqC,mBAAmB,EAAE,MAAM,iBAAiB,CAAC;AAIpG,eAAO,MAAM,kBAAkB,wDAA+D,CAAC"}
+{"version":3,"file":"formatPrimitive.d.ts","sourceRoot":"","sources":["../src/formatPrimitive.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,SAAS,EAAqC,mBAAmB,EAAE,MAAM,iBAAiB,CAAC;AAGpG,eAAO,MAAM,kBAAkB,wDAA+D,CAAC"}

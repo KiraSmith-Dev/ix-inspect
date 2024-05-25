@@ -11,6 +11,7 @@ var _CircularRefIndexMap_map;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createContext = void 0;
 const assert_1 = __importDefault(require("./assert"));
+const colors_1 = require("./colors");
 class CircularRefIndexMap {
     constructor() {
         _CircularRefIndexMap_map.set(this, new Map());
@@ -42,6 +43,7 @@ function createContext(options) {
         parentValues: [],
         circularRefIndexMap: new CircularRefIndexMap(),
         originalOptions: options,
+        colorMap: options.color ? colors_1.colorMap : colors_1.noopMap
     };
 }
 exports.createContext = createContext;

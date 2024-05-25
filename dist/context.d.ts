@@ -1,3 +1,4 @@
+import { IColorMap } from './colors';
 import { IxInspectOptions } from './options';
 export interface IxInspectContext {
     currentDepth: number;
@@ -10,6 +11,7 @@ export interface IxInspectContext {
     parentValues: unknown[];
     circularRefIndexMap: CircularRefIndexMap;
     originalOptions: IxInspectOptions;
+    colorMap: IColorMap;
 }
 declare class CircularRefIndexMap {
     #private;

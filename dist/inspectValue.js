@@ -9,7 +9,6 @@ const assert_1 = __importDefault(require("./assert"));
 const valueData_1 = require("./valueData");
 const ixInspect_1 = __importDefault(require("./ixInspect"));
 const primordials_1 = __importDefault(require("./primordials"));
-const colors_1 = __importDefault(require("./colors"));
 const customInspectShim_1 = require("./customInspectShim");
 const { FunctionPrototypeCall } = primordials_1.default;
 const customInspectSymbol = Symbol.for('nodejs.util.inspect.custom');
@@ -21,7 +20,7 @@ function checkCircular(value, vd, ctx) {
     if (valueIsParent || ctx.circularRefIndexMap.has(value)) {
         const index = ctx.circularRefIndexMap.has(value) ? ctx.circularRefIndexMap.get(value) : ctx.circularRefIndexMap.add(value);
         returnValue.shouldReturn = valueIsParent;
-        returnValue.prefix = valueIsParent ? colors_1.default.circular(`[Circular *${index}]`) : colors_1.default.ref(`<ref *${index}> `);
+        returnValue.prefix = valueIsParent ? ctx.colorMap.circular(`[Circular *${index}]`) : ctx.colorMap.ref(`<ref *${index}> `);
     }
     return returnValue;
 }
@@ -80,7 +79,7 @@ function inspectValue(value, ctx) {
     const circularData = checkCircular(value, vd, ctx);
     if (circularData.shouldReturn)
         return circularData.prefix;
-    return colors_1.default.default(`${circularData.prefix}${formatValue(value, vd, ctx)}`);
+    return ctx.colorMap.default(`${circularData.prefix}${formatValue(value, vd, ctx)}`);
 }
 exports.default = inspectValue;
 //# sourceMappingURL=inspectValue.js.map

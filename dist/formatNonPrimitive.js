@@ -8,7 +8,6 @@ const chalk_1 = __importDefault(require("chalk"));
 const inspectValue_1 = __importDefault(require("./inspectValue"));
 const functionPrefix_1 = __importDefault(require("./typeDetection/functionPrefix"));
 const primordials_1 = __importDefault(require("./primordials"));
-const colors_1 = __importDefault(require("./colors"));
 const strip_ansi_1 = __importDefault(require("strip-ansi"));
 const { ObjectGetOwnPropertyDescriptor } = primordials_1.default;
 exports.nonPrimitiveFormatMap = new Map();
@@ -36,8 +35,9 @@ function getEntries(value, vd) {
     });
 }
 // TODO: Possibly instead format all values for circular/ref, so that the topmost value (which isn't under a key, since it's topmost) will also have this applied
-function formatPair(ctx, entry, separator = colors_1.default.colon(': '), inspectBoth = false) {
-    return `${colors_1.default.key(`${inspectBoth ? (0, inspectValue_1.default)(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? (0, inspectValue_1.default)(entry.value, ctx) : entry.value}`;
+function formatPair(ctx, entry, separator = ctx.colorMap.colon(': '), inspectBoth = false) {
+    return `${ctx.colorMap.key(`${(typeof entry.key === 'string' && !inspectBoth) ? entry.key : `[${(0, inspectValue_1.default)(entry.key, ctx)}]`}`)}${separator}${entry.needsFormatting ? (0, inspectValue_1.default)(entry.value, ctx) : entry.value}`;
+    //return `${ctx.colorMap.key(`${inspectBoth ? inspectValue(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
 }
 // Mostly just a wrapper for changing the ctx properties
 function formatEntries(value, vd, ctx, formatOptions) {
@@ -58,13 +58,14 @@ function formatEntries(value, vd, ctx, formatOptions) {
     --ctx.currentDepth;
     ctx.totalIndentation = oldIndent;
     // TODO: Support total indenting
-    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + (0, strip_ansi_1.default)(curEntry).length, 0) >= ctx.breakLength;
+    const maybeStripAnsi = ctx.colorEnabled ? (str) => (0, strip_ansi_1.default)(str) : (str) => str;
+    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + maybeStripAnsi(curEntry).length, 0) >= ctx.breakLength;
     const lineBreakOrSpace = isPastBreakLength ? `\n${ctx.totalIndentation}` : ' ';
     //const lineBreakOrSpace = isPastBreakLength ? maybeLineBreak : ' ';
     const maybeRelativeIndent = isPastBreakLength ? ctx.indentation : '';
     if (isPastBreakLength)
         formattedEntries = formattedEntries.map(entry => `${maybeRelativeIndent}${entry}`);
-    const maybePrefix = ctx.circularRefIndexMap.has(value) ? colors_1.default.ref(`<ref *${ctx.circularRefIndexMap.get(value)}> `) : '';
+    const maybePrefix = ctx.circularRefIndexMap.has(value) ? ctx.colorMap.ref(`<ref *${ctx.circularRefIndexMap.get(value)}> `) : '';
     return `${formatOptions.isAppendingToTag ? ' ' : ''}${maybePrefix}${formatOptions.brackets[0]}${lineBreakOrSpace}${formattedEntries.join(`,${lineBreakOrSpace}`)}${lineBreakOrSpace}${formatOptions.brackets[1]}`;
 }
 exports.nonPrimitiveFormatMap.set('Object', (value, vd, ctx) => {
@@ -74,7 +75,7 @@ exports.nonPrimitiveFormatMap.set('Function', (value, vd, ctx) => {
     const functionTag = (0, functionPrefix_1.default)(value, vd);
     if (ctx.currentDepth >= ctx.maxDepth)
         return functionTag;
-    return `${functionTag}${formatEntries(value, vd, ctx, { isAppendingToTag: true })}`;
+    return ctx.colorMap.function(`${functionTag}${formatEntries(value, vd, ctx, { isAppendingToTag: true })}`);
 });
 exports.nonPrimitiveFormatMap.set('Array', (value, vd, ctx) => {
     if (!primordials_1.default.ArrayIsArray(value))
@@ -99,11 +100,11 @@ exports.nonPrimitiveFormatMap.set('Array', (value, vd, ctx) => {
     return `${maybePrefix}[${lineBreakOrSpace}${formattedEntries.join(`,${lineBreakOrSpace}`)}${lineBreakOrSpace}]`;
 });
 exports.nonPrimitiveFormatMap.set('Map', (value, vd, ctx) => {
-    return `${vd.getPrefix(`(${primordials_1.default.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: colors_1.default.arrow(' => ') })}`;
+    return `${vd.getPrefix(`(${primordials_1.default.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: ctx.colorMap.arrow(' => ') })}`;
 });
 function nonPrimitiveFallbackFormatter(value, vd, ctx) {
     if (ctx.currentDepth >= ctx.maxDepth)
-        return colors_1.default.objectfallback(`[object ${vd.typeName}]`);
+        return ctx.colorMap.objectfallback(`[object ${vd.typeName}]`);
     return `${vd.getPrefix()}${formatEntries(value, vd, ctx)}`;
 }
 exports.nonPrimitiveFallbackFormatter = nonPrimitiveFallbackFormatter;
