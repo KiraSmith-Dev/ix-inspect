@@ -1,4 +1,5 @@
 import assert from './assert';
+import { IColorMap, colorMap, noopMap } from './colors';
 import { IxInspectOptions } from './options';
 
 export interface IxInspectContext {
@@ -12,6 +13,7 @@ export interface IxInspectContext {
     parentValues: unknown[];
     circularRefIndexMap: CircularRefIndexMap;
     originalOptions: IxInspectOptions;
+    colorMap: IColorMap;
 }
 
 class CircularRefIndexMap {
@@ -48,5 +50,6 @@ export function createContext(options: IxInspectOptions): IxInspectContext {
         parentValues: [],
         circularRefIndexMap: new CircularRefIndexMap(),
         originalOptions: options,
+        colorMap: options.color ? colorMap : noopMap
     }
 }

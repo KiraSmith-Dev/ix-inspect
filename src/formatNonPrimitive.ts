@@ -5,7 +5,6 @@ import { Formatter, getNonPrimitiveTypeName, isNonPrimitive, NonPrimitive } from
 import getFunctionPrefix from './typeDetection/functionPrefix';
 import { ValueData, ValueDataNonPrim } from './valueData';
 import primordials from './primordials';
-import colors from './colors';
 import stripAnsi from 'strip-ansi';
 
 const { ObjectGetOwnPropertyDescriptor } = primordials;
@@ -50,8 +49,9 @@ function getEntries(value: NonPrimitive, vd: ValueDataNonPrim): InspectEntry[] {
 }
 
 // TODO: Possibly instead format all values for circular/ref, so that the topmost value (which isn't under a key, since it's topmost) will also have this applied
-function formatPair(ctx: IxInspectContext, entry: InspectEntry, separator = colors.colon(': '), inspectBoth = false): string {
-    return `${colors.key(`${inspectBoth ? inspectValue(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
+function formatPair(ctx: IxInspectContext, entry: InspectEntry, separator = ctx.colorMap.colon(': '), inspectBoth = false): string {
+    return `${ctx.colorMap.key(`${(typeof entry.key === 'string' && !inspectBoth) ? entry.key : `[${inspectValue(entry.key, ctx)}]`}`)}${separator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
+    //return `${ctx.colorMap.key(`${inspectBoth ? inspectValue(entry.key, ctx) : typeof entry.key === 'string' ? entry.key : `[${String(entry.key)}]`}`)}${separator}${entry.needsFormatting ? inspectValue(entry.value, ctx) : entry.value}`;
 }
 
 // Mostly just a wrapper for changing the ctx properties
@@ -76,7 +76,8 @@ function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspect
     ctx.totalIndentation = oldIndent;
     
     // TODO: Support total indenting
-    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + stripAnsi(curEntry).length, 0) >= ctx.breakLength;
+    const maybeStripAnsi = ctx.colorEnabled ? (str: string) => stripAnsi(str) : (str: string) => str;
+    const isPastBreakLength = formattedEntries.reduce((totalLen, curEntry) => totalLen + maybeStripAnsi(curEntry).length, 0) >= ctx.breakLength;
     const lineBreakOrSpace = isPastBreakLength ? `\n${ctx.totalIndentation}` : ' ';
     //const lineBreakOrSpace = isPastBreakLength ? maybeLineBreak : ' ';
     const maybeRelativeIndent = isPastBreakLength ? ctx.indentation : '';
@@ -84,7 +85,7 @@ function formatEntries(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspect
     if (isPastBreakLength)
         formattedEntries = formattedEntries.map(entry => `${maybeRelativeIndent}${entry}`)
     
-    const maybePrefix = ctx.circularRefIndexMap.has(value) ? colors.ref(`<ref *${ctx.circularRefIndexMap.get(value)}> `) : '';
+    const maybePrefix = ctx.circularRefIndexMap.has(value) ? ctx.colorMap.ref(`<ref *${ctx.circularRefIndexMap.get(value)}> `) : '';
     return `${formatOptions.isAppendingToTag ? ' ' : ''}${maybePrefix}${formatOptions.brackets[0]}${lineBreakOrSpace}${formattedEntries.join(`,${lineBreakOrSpace}`)}${lineBreakOrSpace}${formatOptions.brackets[1]}`;
 }
 
@@ -97,7 +98,7 @@ nonPrimitiveFormatMap.set('Function', (value: NonPrimitive, vd: ValueDataNonPrim
     if (ctx.currentDepth >= ctx.maxDepth)
         return functionTag;
     
-    return `${functionTag}${formatEntries(value, vd, ctx, { isAppendingToTag: true })}`;
+    return ctx.colorMap.function(`${functionTag}${formatEntries(value, vd, ctx, { isAppendingToTag: true })}`);
 });
 
 nonPrimitiveFormatMap.set('Array', (value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext) => {
@@ -129,12 +130,12 @@ nonPrimitiveFormatMap.set('Array', (value: NonPrimitive, vd: ValueDataNonPrim, c
 });
 
 nonPrimitiveFormatMap.set('Map', (value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext) => {
-    return `${vd.getPrefix(`(${primordials.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: colors.arrow(' => ') })}`
+    return `${vd.getPrefix(`(${primordials.MapPrototypeGetSize(value)})`)}${formatEntries(value, vd, ctx, { separator: ctx.colorMap.arrow(' => ') })}`
 });
 
 export function nonPrimitiveFallbackFormatter(value: NonPrimitive, vd: ValueDataNonPrim, ctx: IxInspectContext) {
     if (ctx.currentDepth >= ctx.maxDepth)
-        return colors.objectfallback(`[object ${vd.typeName}]`);
+        return ctx.colorMap.objectfallback(`[object ${vd.typeName}]`);
     
     return `${vd.getPrefix()}${formatEntries(value, vd, ctx)}`
 }

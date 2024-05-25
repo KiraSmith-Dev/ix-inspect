@@ -109,3 +109,5 @@ map.set('foo', 'bar');
 map.set([1, 2, 3], 5);
 tryValue(map);
 tryValue([5, 6, 7]);
+
+console.log(inspect(global, { depth: 5, breakLength: 0 }));

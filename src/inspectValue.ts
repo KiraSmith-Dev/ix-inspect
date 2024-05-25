@@ -6,7 +6,6 @@ import assert from './assert';
 import { createValueData, ValueData } from './valueData';
 import inspect from './ixInspect';
 import primordials from './primordials';
-import colors from './colors';
 import { customInspectShim, ixOptionsToUtilOptions } from './customInspectShim';
 
 const { FunctionPrototypeCall } = primordials;
@@ -24,7 +23,7 @@ function checkCircular(value: unknown, vd: ValueData, ctx: IxInspectContext): { 
         const index = ctx.circularRefIndexMap.has(value) ? ctx.circularRefIndexMap.get(value) : ctx.circularRefIndexMap.add(value);
         
         returnValue.shouldReturn = valueIsParent;
-        returnValue.prefix = valueIsParent ? colors.circular(`[Circular *${index}]`) : colors.ref(`<ref *${index}> `);
+        returnValue.prefix = valueIsParent ? ctx.colorMap.circular(`[Circular *${index}]`) : ctx.colorMap.ref(`<ref *${index}> `);
     }
     
     return returnValue;
@@ -96,5 +95,5 @@ export default function inspectValue(value: unknown, ctx: IxInspectContext): str
     if (circularData.shouldReturn)
         return circularData.prefix;
     
-    return colors.default(`${circularData.prefix}${formatValue(value, vd, ctx)}`);
+    return ctx.colorMap.default(`${circularData.prefix}${formatValue(value, vd, ctx)}`);
 }

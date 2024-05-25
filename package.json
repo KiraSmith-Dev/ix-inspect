@@ -15,6 +15,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": "KiraSmith-Dev/ix-inspect",
   "dependencies": {
     "chalk": "^4.1.2",
     "strip-ansi": "^6.0.1"
