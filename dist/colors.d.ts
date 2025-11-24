@@ -1,4 +1,4 @@
-declare type ColorApplicator = (text: string) => string;
+type ColorApplicator = (text: string) => string;
 export interface IColorMap {
     ref: ColorApplicator;
     circular: ColorApplicator;
