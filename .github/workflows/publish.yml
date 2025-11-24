@@ -15,7 +15,7 @@ jobs:
       packages: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       
       - name: Publish to github
         uses: KiraSmith-Dev/KiraSmith-Dev/.github/actions/publish-github@main
@@ -25,7 +25,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       
       - name: Publish to npm
         uses: KiraSmith-Dev/KiraSmith-Dev/.github/actions/publish-npm@main
